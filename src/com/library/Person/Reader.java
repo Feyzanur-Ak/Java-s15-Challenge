@@ -9,8 +9,8 @@ public class Reader extends  Person {
     private final List<Book> books;
     private final int maxBookLimit;
 
-    public Reader(String name ) {
-        super(name);
+    public Reader(String name, String surname ) {
+        super(name, surname);
         this.maxBookLimit=5;
         this.books=new ArrayList<>();
     }
@@ -19,7 +19,7 @@ public class Reader extends  Person {
         return maxBookLimit;
     }
 
-    public boolean borrow_book(Book book) {
+    public boolean borrowBook(Book book) {
         if (books.size() >= maxBookLimit) {
             System.out.println("Kitap limiti aşıldı.");
             return false;
@@ -34,7 +34,7 @@ public class Reader extends  Person {
         return false;
     }
 
-    public void return_book(Book book) {
+    public void returnBook(Book book) {
         if (books.remove(book)) {
             book.setStatus("available");
             System.out.println(book.getName() + " iade edildi.");
@@ -43,7 +43,7 @@ public class Reader extends  Person {
         }
     }
 
-    public void purchase_book(Book book) {
+    public void purchaseBook(Book book) {
         Scanner scanner = new Scanner(System.in);
 
         if(!books.contains(book)){
@@ -69,11 +69,11 @@ public class Reader extends  Person {
             }
       }
 
-        show_book();
+        showBook();
     }
 
 
-    public void show_book() {
+    public void showBook() {
         if (books.isEmpty()) {
             System.out.println("Bu okuyucu henüz hiçbir kitap satın almamış.");
             return;

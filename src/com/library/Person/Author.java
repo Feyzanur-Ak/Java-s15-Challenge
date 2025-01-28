@@ -7,8 +7,8 @@ public class Author extends Person {
     protected final  List<Book> books;
 
 
-    public Author(String name, String id, List<Book> books) {
-        super(name);
+    public Author(String name,String surname, String id, List<Book> books) {
+        super(name,surname);
         this.books=new ArrayList<>();
     }
 
