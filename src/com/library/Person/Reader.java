@@ -1,7 +1,6 @@
 package com.library.Person;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 
@@ -14,6 +13,10 @@ public class Reader extends  Person {
         super(name);
         this.maxBookLimit=5;
         this.books=new ArrayList<>();
+    }
+
+    public int getMaxBookLimit() {
+        return maxBookLimit;
     }
 
     public boolean borrow_book(Book book) {
@@ -65,22 +68,23 @@ public class Reader extends  Person {
                     break;
             }
       }
+
+        show_book();
     }
 
 
-    public String show_book() {
+    public void show_book() {
         if (books.isEmpty()) {
-            System.out.println("Sistemde şu anda hiçbir kitap bulunmamaktadır.");
-            return "";
+            System.out.println("Bu okuyucu henüz hiçbir kitap satın almamış.");
+            return;
         }
 
-        System.out.println("Sistemde bulunan kitaplar gösterilmektedir:");
+        System.out.println("Okuyucunun sahip olduğu kitaplarr:");
         int counter=1;
         for(Book book : books) {
             System.out.println(counter + ". " + book);
             counter++;
         }
-        return "";
     }
 
     @Override

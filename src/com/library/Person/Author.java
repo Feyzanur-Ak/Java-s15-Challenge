@@ -4,11 +4,11 @@ import java.util.*;
 
 public class Author extends Person {
 
-    private List<Book> books;
+    protected final  List<Book> books;
 
 
     public Author(String name, String id, List<Book> books) {
-        super(name, id);
+        super(name);
         this.books=new ArrayList<>();
     }
 

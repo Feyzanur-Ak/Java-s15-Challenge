@@ -5,8 +5,8 @@ import java.util.List;
 public class Librarian extends Person {
     private  String password;
 
-    public Librarian(String name, String id,String password) {
-        super(name, id);
+    public Librarian(String name,String password) {
+        super(name);
         this.password=password;
     }
 
