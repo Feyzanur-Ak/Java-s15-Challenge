@@ -7,16 +7,14 @@ import java.util.Set;
 public abstract class Person {
 
     private String name;
-    private String id;
 
-    public Person(String name, String id) {
+
+    public Person(String name) {
         this.name=name;
-        this.id=id;
+
     }
 
-    public String getId() {
-        return id;
-    }
+
 
     public String getName() {
         return name;

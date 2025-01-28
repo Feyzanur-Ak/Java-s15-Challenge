@@ -8,14 +8,18 @@ public class Book {
     private String author;
     private String category;
     private String status;
+    private String edition;
 
-    public Book(long id, String name, double price, String author, String category,String status) {
+
+    public Book(long id, String name, double price, String author, String category,String status,String edition) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.author = author;
         this.category = category;
         this.status = "Mevcut";
+        this.edition=edition;
+
     }
 
     public long getId() {
@@ -56,5 +60,18 @@ public class Book {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", author='" + author + '\'' +
+                ", category='" + category + '\'' +
+                ", status='" + status + '\'' +
+                ", edition='" + edition + '\'' +
+                '}';
     }
 }
