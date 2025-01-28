@@ -4,26 +4,24 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-public class Person {
+public abstract class Person {
 
-    Set<String> names=new HashSet<>(); // kayıt kısmının ekleneceği isimler
+    private String name;
+    private String id;
 
-   public void start() {
-       Scanner question=new Scanner(System.in);
-       System.out.println("İsminizi giriniz: ");
+    public Person(String name, String id) {
+        this.name=name;
+        this.id=id;
+    }
 
-       String answer = question.nextLine();
+    public String getId() {
+        return id;
+    }
 
-       if(names.contains(answer)) {
-           System.out.println("Hoş geldiniz, " + answer);
-       } else {
-           whoyouare(answer);
-       }
-   }
+    public String getName() {
+        return name;
+    }
 
-   public  void whoyouare(String name) {
-       System.out.println("Merhaba, " + name + "! Seni tanımıyorum, ismini listeye ekliyorum.");
-       names.add(name);
-   }
+    public abstract void whoYouAre();
 
 }
