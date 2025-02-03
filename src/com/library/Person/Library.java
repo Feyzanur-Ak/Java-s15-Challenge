@@ -21,47 +21,58 @@ public class Library
     }
 
     public void new_book(Book book) {
-        boolean bookExists = false;
-
-        for (Book b : books) {
-            if (b.getId() == book.getId()) {
-                bookExists = true;
-                break;
-            }
-        }
-
-        if (bookExists) {
+        if (books.contains(book)) {
             System.out.println("Bu kitap zaten mevcut: " + book.getName());
         } else {
-
             books.add(book);
             System.out.println("Kitap başarıyla eklendi: " + book.getName());
         }
     }
 
     public void lend_book(Book book, Reader reader) {
-        if (books.contains(book) && book.getStatus().equals("available")) {
-            book.setStatus("borrowed");
-            book.setOwner(reader);
-            System.out.println(reader.getName() + " kitabı ödünç aldı: " + book.getName());
+        if (book == null || reader == null) {
+            System.out.println("Geçersiz kitap veya okuyucu bilgisi.");
+            return;
+        }
+
+        if (books.contains(book)) {
+            if (book.getStatus().equals("available")) {
+                book.setStatus("borrowed");
+                book.setOwner(reader);
+                System.out.println(reader.getName() + " kitabı ödünç aldı: " + book.getName());
+            } else {
+                System.out.println("Kitap şu anda ödünç verilmiş: " + book.getName());
+            }
         } else {
-            System.out.println("Kitap ödünç verilemez: " + book.getName());
+            System.out.println("Kitap kütüphanede mevcut değil: " + book.getName());
         }
     }
 
     public void take_back_book(Book book) {
-        if (book.getStatus().equals("borrowed")) {
-            book.setStatus("available");
-            book.setOwner(null);
-            System.out.println("Kitap geri alındı: " + book.getName());
+        if (books.contains(book)) {
+            if (book.getStatus().equals("borrowed")) {
+                book.setStatus("available");
+                book.setOwner(null);
+                System.out.println("Kitap geri alındı: " + book.getName());
+            } else {
+                System.out.println("Bu kitap zaten mevcut: " + book.getName());
+            }
         } else {
-            System.out.println("Bu kitap zaten mevcut: " + book.getName());
+            System.out.println("Kitap kütüphanede mevcut değil: " + book.getName());
         }
     }
 
     public void show_book() {
+        if (books.isEmpty()) {
+            System.out.println("Kütüphanede kitap bulunmamaktadır.");
+            return;
+        }
+
         books.forEach(book -> {
-            System.out.println("Kitap: " + book.getName() + " - Durum: " + book.getStatus());
+            System.out.println("Kitap: " + book.getName() +
+                    " - Yazar: " + book.getAuthor() +
+                    " - Durum: " + book.getStatus() +
+                    " - Fiyat: " + book.getPrice() + " TL");
         });
     }
 

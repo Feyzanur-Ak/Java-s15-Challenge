@@ -3,6 +3,7 @@ package com.library.Person;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Book {
 
@@ -15,7 +16,7 @@ public class Book {
     private LocalDate dateOfPurchase;
     private Reader owner;
 
-      List<Book> books=new ArrayList<>();
+
 
     public Book(long id, String name, double price, String author, String status, String edition, LocalDate dateOfPurchase, Reader owner) {
         this.id = id;
@@ -24,8 +25,8 @@ public class Book {
         this.author = author;
         this.status = "available";
         this.edition = edition;
-        this.dateOfPurchase = null;
-        this.owner = null;
+        this.dateOfPurchase = dateOfPurchase;
+        this.owner = owner;
     }
 
     public long getId() {
@@ -85,33 +86,19 @@ public class Book {
     }
 
     public void display(){
-        for(Book book: books) {
-            System.out.println("Sistemde bulunan kitaplar :" + book);
+        System.out.println(this);
+    }
+
+
+    public void updateStatus(String newStatus) {
+        if (newStatus.equals("available") || newStatus.equals("borrowed") || newStatus.equals("purchased")) {
+            this.status = newStatus;
+            System.out.println("Kitap durumu güncellendi: " + newStatus);
+        } else {
+            System.out.println("Geçersiz durum: " + newStatus);
         }
     }
 
-    public  void update_status(String newStatus){
-        switch (newStatus) {
-            case "available":
-                this.status = "available";
-                System.out.println("Kitap durumu 'Mevcut' olarak güncellendi.");
-                break;
-
-            case "purchased":
-                this.status = "purchased";
-                System.out.println("Kitap durumu 'Satın Alındı' olarak güncellendi.");
-                break;
-
-            case "borrowed":
-                this.status = "borrowed";
-                System.out.println("Kitap durumu 'Ödünç Alındı' olarak güncellendi.");
-                break;
-
-            default:
-                System.out.println("Geçersiz bir durum girdiniz. Durum güncellenmedi.");
-                break;
-        }
-    }
 
     public void getOwner(Reader reader) {
         if (status.equals("borrowed")) {
@@ -133,14 +120,9 @@ public class Book {
         }
     }
 
-    public void changeOwner(Reader reader) {
-        if (status.equals("borrowed")) {
-            System.out.println("Kitap şu anda " + reader.getName() + " adlı kullanıcıda.");
-        } else if (status.equals("purchased")) {
-            System.out.println("Kitap " + reader.getName() + " adlı kullanıcı tarafından " + dateOfPurchase + " tarihinde satın alınmıştır.");
-        } else {
-            System.out.println("Kitap şu anda kimseye ait değildir.");
-        }
+    public void changeOwner(Reader newOwner) {
+        this.owner = newOwner;
+        System.out.println("Kitap sahibi değiştirildi: " + (newOwner != null ? newOwner.getName() : "Hiç kimse"));
     }
 
     @Override
@@ -154,5 +136,18 @@ public class Book {
                 ", edition='" + edition + '\'' +
                 ", dateOfPurchase=" + dateOfPurchase +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return id == book.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

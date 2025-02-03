@@ -1,32 +1,38 @@
 package com.library.Person;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
+public class Reader extends Person {
 
-public class Reader extends  Person {
-
-    private final List<Book> books;
+    private final List<Book> borrowedBooks;
     private final int maxBookLimit;
 
-    public Reader(String name, String surname ) {
+    public Reader(String name, String surname) {
         super(name, surname);
-        this.maxBookLimit=5;
-        this.books=new ArrayList<>();
+        this.maxBookLimit = 5;
+        this.borrowedBooks = new ArrayList<>();
     }
 
     public int getMaxBookLimit() {
         return maxBookLimit;
     }
 
+    public List<Book> getBorrowedBooks() {
+        return borrowedBooks;
+    }
+
     public boolean borrowBook(Book book) {
-        if (books.size() >= maxBookLimit) {
+        if (borrowedBooks.size() >= maxBookLimit) {
             System.out.println("Kitap limiti aşıldı.");
             return false;
         }
         if (book.getStatus().equals("available")) {
-            books.add(book);
+            borrowedBooks.add(book);
             book.setStatus("borrowed");
+            book.setOwner(this);
             System.out.println(book.getName() + " ödünç alındı.");
             return true;
         }
@@ -35,8 +41,9 @@ public class Reader extends  Person {
     }
 
     public void returnBook(Book book) {
-        if (books.remove(book)) {
+        if (borrowedBooks.remove(book)) {
             book.setStatus("available");
+            book.setOwner(null);
             System.out.println(book.getName() + " iade edildi.");
         } else {
             System.out.println("Bu kitap sizin tarafınızdan alınmamış.");
@@ -46,16 +53,21 @@ public class Reader extends  Person {
     public void purchaseBook(Book book) {
         Scanner scanner = new Scanner(System.in);
 
-        if(!books.contains(book)){
-          System.out.println("Kitap Kütüphanemizde bulunmamaktadır");
-      } else{
-            System.out.println("Kitabın fiyatı " + book.getPrice() + " TL'dir.");
-            System.out.println("Bu kitabı satın almak istiyor musunuz? (Evet için 1, Hayır için 2):");
-            int cevap = scanner.nextInt();
+        if (!borrowedBooks.contains(book)) {
+            System.out.println("Kitap kütüphanemizde bulunmamaktadır.");
+            return;
 
-            switch (cevap){
+        }
+
+        System.out.println("Kitabın fiyatı " + book.getPrice() + " TL'dir.");
+        System.out.println("Bu kitabı satın almak istiyor musunuz? (Evet için 1, Hayır için 2):");
+        int cevap = scanner.nextInt();
+
+            switch (cevap) {
                 case 1:
-                    books.remove(book);
+                    borrowedBooks.remove(book);
+                    book.setStatus("purchased");
+                    book.setOwner(this);
                     System.out.println("Kitabı başarıyla satın aldınız: " + book.getName());
                     break;
 
@@ -67,23 +79,16 @@ public class Reader extends  Person {
                     System.out.println("Geçersiz bir seçim yaptınız. Lütfen tekrar deneyin.");
                     break;
             }
-      }
 
         showBook();
     }
 
-
     public void showBook() {
-        if (books.isEmpty()) {
-            System.out.println("Bu okuyucu henüz hiçbir kitap satın almamış.");
-            return;
-        }
-
-        System.out.println("Okuyucunun sahip olduğu kitaplarr:");
-        int counter=1;
-        for(Book book : books) {
-            System.out.println(counter + ". " + book);
-            counter++;
+        if (borrowedBooks.isEmpty()) {
+            System.out.println("Henüz ödünç alınmış kitap yok.");
+        } else {
+            System.out.println("Ödünç alınan kitaplar:");
+            borrowedBooks.forEach(book -> System.out.println("- " + book.getName()));
         }
     }
 
@@ -92,6 +97,21 @@ public class Reader extends  Person {
         System.out.println("Ben bir okuyucuyum: " + getName());
     }
 
+    @Override
+    public String toString() {
+        return getName() + ' ' + getSurname();
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reader reader = (Reader) o;
+        return getName().equalsIgnoreCase(reader.getName()) && getSurname().equalsIgnoreCase(reader.getSurname());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName().toLowerCase(), getSurname().toLowerCase());
+    }
 }

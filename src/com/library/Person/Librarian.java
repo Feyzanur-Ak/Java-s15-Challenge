@@ -1,58 +1,69 @@
 package com.library.Person;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Librarian extends Person {
-    private  String password;
-    private List<Book> books;
+    private String password;
 
-    public Librarian(String name, String surname, String password,List<String> books ) {
-        super(name,surname);
-        this.password=password;
-        this.books=new ArrayList<>();
+    public Librarian(String name, String surname, String password) {
+        super(name, surname);
+        this.password = password;
     }
 
-    public void addBook(List<Book> books, Book book) {
-        books.add(book);
-        System.out.println(book.getName() + " başarıyla eklendi.");
+    // Kitap ekleme
+    public void addBook(Library library, Book book) {
+        library.new_book(book);
+        System.out.println(book.getName() + " başarıyla kütüphaneye eklendi.");
     }
 
-    public  void removeBook(List<Book> books, Book book) {
-        books.remove(book);
-        System.out.println(book.getName() + "kitap silindi.");
+    // Kitap silme
+    public void removeBook(Library library, Book book) {
+        if (!library.getBooks().contains(book)) {
+            System.out.println(book.getName() + " kütüphanede mevcut değil.");
+            return;
+        }
+        library.getBooks().remove(book);
+        System.out.println(book.getName() + " başarıyla kütüphaneden silindi.");
     }
-    public void updateBook(Book book, String newName, String newAuthor, double newPrice) {
+
+    // Kitap güncelleme
+    public void updateBook(Library library, Book book, String newName, String newAuthor, double newPrice) {
+        if (!library.getBooks().contains(book)) {
+            System.out.println("Güncellenecek kitap kütüphanede bulunamadı.");
+            return;
+        }
         book.setName(newName);
         book.setAuthor(newAuthor);
         book.setPrice(newPrice);
         System.out.println(book.getName() + " başarıyla güncellendi.");
-
     }
 
-    public void returnBook(Book book) {
-      if(!books.contains(book)){
-          books.add(book);
-          book.setStatus("available");
-          System.out.println(book.getName() + " başarıyla iade edildi.");
-      } else {
-          System.out.println(book.getName() + " zaten kütüphanede mevcut.");
-      }
+    // Kitap iade
+    public void returnBook(Library library, Book book) {
+        if (library.getBooks().contains(book)) {
+            System.out.println(book.getName() + " zaten kütüphanede mevcut.");
+            return;
+        }
+        library.getBooks().add(book);
+        book.setStatus("available");
+        System.out.println(book.getName() + " başarıyla kütüphaneye iade edildi.");
     }
 
-    public void searchBooks(){
-        Scanner scanner=new Scanner(System.in);
-        System.out.println("Aradığınız Kitabın İsmini Giriniz: ");
-        String input= scanner.nextLine();
+    // Kitap arama
+    public void searchBooks(Library library) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Aradığınız kitabın ismini giriniz: ");
+        String input = scanner.nextLine();
 
         boolean found = false;
 
-        for (Book book : books) {
+        for (Book book : library.getBooks()) {
             if (book.getName().toLowerCase().contains(input.toLowerCase())) {
                 System.out.println("Kitap bulundu: " + book.getName());
                 System.out.println("Durumu: " + book.getStatus());
-                found = true; // Kitap bulundu
+                found = true;
             }
         }
 
@@ -61,7 +72,8 @@ public class Librarian extends Person {
         }
     }
 
-    public boolean verifyMember(List<Reader> readers, String name, String surname) {
+    // Üye doğrulama
+    public boolean verifyMember(Set<Reader> readers, String name, String surname) {
         for (Reader reader : readers) {
             if (reader.getName().equalsIgnoreCase(name) && reader.getSurname().equalsIgnoreCase(surname)) {
                 System.out.println("Üye doğrulandı: " + name + " " + surname);
@@ -69,10 +81,23 @@ public class Librarian extends Person {
             }
         }
         System.out.println("Üye bulunamadı: " + name + " " + surname);
-        return false;
+        System.out.println("Yeni üye kaydı başlatılıyor...");
+
+        // Yeni üye kaydı
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Lütfen üyenin yaşını girin: ");
+        int age = scanner.nextInt();
+        scanner.nextLine(); // Satır sonu karakterini temizle
+
+        Reader newReader = new Reader(name, surname);
+        readers.add(newReader);
+        System.out.println("Yeni üye başarıyla kaydedildi: " + newReader);
+
+        return true;
     }
 
-    public void issueBook(List<Reader> readers, String readerName, String readerSurname, Book book) {
+    // Kitap ödünç verme
+    public void issueBook(Library library, Set<Reader> readers, String readerName, String readerSurname, Book book) {
         if (!verifyMember(readers, readerName, readerSurname)) {
             System.out.println("Üye doğrulaması başarısız. Kitap ödünç verilemedi.");
             return;
@@ -86,6 +111,7 @@ public class Librarian extends Person {
         for (Reader reader : readers) {
             if (reader.getName().equalsIgnoreCase(readerName) && reader.getSurname().equalsIgnoreCase(readerSurname)) {
                 if (reader.borrowBook(book)) {
+                    library.lend_book(book, reader); // Kitap ödünç veriliyor
                     System.out.println(book.getName() + " kitabı " + readerName + " " + readerSurname + " üyesine ödünç verildi.");
                 } else {
                     System.out.println("Kitap limiti aşıldı. Kitap ödünç verilemedi.");
@@ -95,6 +121,7 @@ public class Librarian extends Person {
         }
     }
 
+    // Ceza hesaplama
     public double calculateFine(int overdueDays) {
         double finePerDay = 1.5;
         if (overdueDays <= 0) {
@@ -106,7 +133,8 @@ public class Librarian extends Person {
         return totalFine;
     }
 
-    public void createBill(List<Reader> readers, String readerName, String readerSurname, double fineAmount) {
+    // Fatura oluşturma
+    public void createBill(Set<Reader> readers, String readerName, String readerSurname, double fineAmount) {
         if (!verifyMember(readers, readerName, readerSurname)) {
             System.out.println("Üye doğrulaması başarısız. Fatura oluşturulamadı.");
             return;
@@ -116,7 +144,6 @@ public class Librarian extends Person {
         System.out.println("Üye: " + readerName + " " + readerSurname);
         System.out.println("Toplam Ceza: " + fineAmount + " TL");
     }
-
 
     @Override
     public void whoYouAre() {

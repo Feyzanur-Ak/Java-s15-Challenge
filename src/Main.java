@@ -5,15 +5,15 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-
+        // Kütüphane için başlangıç verileri
         Set<Book> books = new HashSet<>();
         Set<Reader> readers = new HashSet<>();
         List<Author> authors = new ArrayList<>();
         Library library = new Library(books, readers);
 
-        // Örnek kitaplar ve okuyucular
-        Author author1 = new Author("George", "Orwell", "1", new ArrayList<>());
-        Author author2 = new Author("J.K.", "Rowling", "2", new ArrayList<>());
+        // Örnek yazarlar ve kitaplar
+        Author author1 = new Author("George", "Orwell");
+        Author author2 = new Author("J.K.", "Rowling");
 
         Book book1 = new Book(1, "1984", 50.0, "George Orwell", "available", "1st", LocalDate.now(), null);
         Book book2 = new Book(2, "Animal Farm", 40.0, "George Orwell", "available", "1st", LocalDate.now(), null);
@@ -30,28 +30,33 @@ public class Main {
         authors.add(author1);
         authors.add(author2);
 
+        // Örnek okuyucular
         Reader reader1 = new Reader("John", "Doe");
         Reader reader2 = new Reader("Jane", "Smith");
         readers.add(reader1);
         readers.add(reader2);
 
-        Librarian librarian = new Librarian("Alice", "Brown", "password123", new ArrayList<>());
+        // Örnek kütüphaneci
+        Librarian librarian = new Librarian("Alice", "Brown", "password123");
 
         // Konsol uygulaması
         Scanner scanner = new Scanner(System.in);
         int choice;
 
         do {
+            // Ana menü
             System.out.println("\n--- Kütüphane Sistemi ---");
             System.out.println("1. Yeni Kitap Ekle");
-            System.out.println("2. Kitap Ara");
+            System.out.println("2. Kitap Ara (ID, İsim veya Yazar)");
             System.out.println("3. Kitap Güncelle");
             System.out.println("4. Kitap Sil");
-            System.out.println("5. Yazarın Kitaplarını Listele");
+            System.out.println("5. Yazara Göre Kitapları Listele");
             System.out.println("6. Kitap Ödünç Al");
             System.out.println("7. Kitap İade Et");
             System.out.println("8. Kitapları Listele");
-            System.out.println("9. Çıkış");
+            System.out.println("9. Kitap Satın Al");
+            System.out.println("10. Kullanıcı Kitap Limitini Kontrol Et");
+            System.out.println("11. Çıkış");
             System.out.print("Seçiminizi yapın: ");
             choice = scanner.nextInt();
             scanner.nextLine(); // Satır sonu karakterini temizle
@@ -71,15 +76,37 @@ public class Main {
 
                     Book newBook = new Book(books.size() + 1, name, price, authorName, "available", edition, LocalDate.now(), null);
                     library.new_book(newBook);
+                    System.out.println("Yeni kitap başarıyla eklendi.");
                     break;
 
                 case 2:
                     // Kitap arama
-                    System.out.print("Aramak istediğiniz kitabın adını girin: ");
-                    String searchName = scanner.nextLine();
-                    library.getBooks().stream()
-                            .filter(book -> book.getName().equalsIgnoreCase(searchName))
-                            .forEach(book -> System.out.println("Bulunan Kitap: " + book));
+                    System.out.println("Arama türünü seçin: 1. ID, 2. İsim, 3. Yazar");
+                    int searchType = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (searchType == 1) {
+                        System.out.print("Kitap ID: ");
+                        long id = scanner.nextLong();
+                        scanner.nextLine();
+                        books.stream()
+                                .filter(book -> book.getId() == id)
+                                .forEach(System.out::println);
+                    } else if (searchType == 2) {
+                        System.out.print("Kitap Adı: ");
+                        String searchName = scanner.nextLine();
+                        books.stream()
+                                .filter(book -> book.getName().equalsIgnoreCase(searchName))
+                                .forEach(System.out::println);
+                    } else if (searchType == 3) {
+                        System.out.print("Yazar Adı: ");
+                        String searchAuthor = scanner.nextLine();
+                        books.stream()
+                                .filter(book -> book.getAuthor().equalsIgnoreCase(searchAuthor))
+                                .forEach(System.out::println);
+                    } else {
+                        System.out.println("Geçersiz seçim.");
+                    }
                     break;
 
                 case 3:
@@ -102,7 +129,8 @@ public class Main {
                         double newPrice = scanner.nextDouble();
                         scanner.nextLine();
 
-                        librarian.updateBook(bookToUpdate, newName, newAuthor, newPrice);
+                        librarian.updateBook(library, bookToUpdate, newName, newAuthor, newPrice);
+                        System.out.println("Kitap başarıyla güncellendi.");
                     } else {
                         System.out.println("Kitap bulunamadı.");
                     }
@@ -120,18 +148,17 @@ public class Main {
                             .orElse(null);
 
                     if (bookToDelete != null) {
-                        librarian.removeBook(new ArrayList<>(books), bookToDelete);
-                        books.remove(bookToDelete);
+                        librarian.removeBook(library, bookToDelete);
+                        System.out.println("Kitap başarıyla silindi.");
                     } else {
                         System.out.println("Kitap bulunamadı.");
                     }
                     break;
 
                 case 5:
-                    // Yazarın kitaplarını listeleme
-                    System.out.print("Yazarın adını girin: ");
+                    // Yazara göre kitapları listeleme
+                    System.out.print("Yazar Adı: ");
                     String authorSearch = scanner.nextLine();
-
                     authors.stream()
                             .filter(author -> author.getName().equalsIgnoreCase(authorSearch))
                             .forEach(Author::showBook);
@@ -139,55 +166,96 @@ public class Main {
 
                 case 6:
                     // Kitap ödünç alma
-                    System.out.print("Okuyucu Adı: ");
-                    String readerName = scanner.nextLine();
-                    System.out.print("Okuyucu Soyadı: ");
-                    String readerSurname = scanner.nextLine();
+                    Reader borrowingReader = verifyMember(scanner, readers);
+
+                    if (borrowingReader.getBorrowedBooks().size() >= 5) {
+                        System.out.println("Kitap limitine ulaştınız! Daha fazla kitap ödünç alamazsınız.");
+                        break;
+                    }
+
                     System.out.print("Kitap ID: ");
                     long bookId = scanner.nextLong();
                     scanner.nextLine();
 
-                    Reader borrowingReader = readers.stream()
-                            .filter(reader -> reader.getName().equalsIgnoreCase(readerName) && reader.getSurname().equalsIgnoreCase(readerSurname))
-                            .findFirst()
-                            .orElse(null);
-
                     Book borrowingBook = books.stream()
-                            .filter(book -> book.getId() == bookId)
+                            .filter(book -> book.getId() == bookId && book.getStatus().equals("available"))
                             .findFirst()
                             .orElse(null);
 
-                    if (borrowingReader != null && borrowingBook != null) {
-                        library.lend_book(borrowingBook, borrowingReader);
+                    if (borrowingBook != null) {
+                        borrowingBook.setStatus("borrowed");
+                        borrowingBook.setOwner(borrowingReader);
+                        borrowingReader.getBorrowedBooks().add(borrowingBook);
+                        System.out.println("Kitap başarıyla ödünç alındı: " + borrowingBook.getName());
+                        System.out.println("Fatura: " + borrowingBook.getPrice() + " TL");
                     } else {
-                        System.out.println("Okuyucu veya kitap bulunamadı.");
+                        System.out.println("Kitap mevcut değil ya da başka bir kullanıcı tarafından ödünç alınmış.");
                     }
                     break;
 
                 case 7:
                     // Kitap iade etme
-                    System.out.print("İade etmek istediğiniz kitabın ID'sini girin: ");
-                    long returnId = scanner.nextLong();
-                    scanner.nextLine();
+                    System.out.print("Adınızı girin: ");
+                    String returnerName = scanner.nextLine();
+                    System.out.print("Soyadınızı girin: ");
+                    String returnerSurname = scanner.nextLine();
 
-                    Book returningBook = books.stream()
-                            .filter(book -> book.getId() == returnId)
+                    Reader returner = readers.stream()
+                            .filter(reader -> reader.getName().equalsIgnoreCase(returnerName) && reader.getSurname().equalsIgnoreCase(returnerSurname))
                             .findFirst()
                             .orElse(null);
 
-                    if (returningBook != null) {
-                        library.take_back_book(returningBook);
+                    if (returner == null) {
+                        System.out.println("Kullanıcı bulunamadı.");
+                        break;
+                    }
+
+                    System.out.print("İade etmek istediğiniz kitabın ID'sini girin: ");
+                    long returnBookId = scanner.nextLong();
+                    scanner.nextLine();
+
+                    Book bookToReturn = returner.getBorrowedBooks().stream()
+                            .filter(book -> book.getId() == returnBookId)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (bookToReturn == null) {
+                        System.out.println("Bu kitabı iade edemezsiniz çünkü size ait değil.");
                     } else {
-                        System.out.println("Kitap bulunamadı.");
+                        bookToReturn.setStatus("available");
+                        bookToReturn.setOwner(null);
+                        returner.getBorrowedBooks().remove(bookToReturn);
+                        System.out.println("Kitap başarıyla iade edildi: " + bookToReturn.getName());
+                        System.out.println("Ücret iade edildi: " + bookToReturn.getPrice() + " TL");
                     }
                     break;
 
-                case 8:
-                    // Kitapları listeleme
-                    library.show_book();
+                case 10:
+                    // Kullanıcı kitap limitini kontrol etme
+                    System.out.print("Adınızı girin: ");
+                    String userName = scanner.nextLine();
+                    System.out.print("Soyadınızı girin: ");
+                    String userSurname = scanner.nextLine();
+
+                    Reader user = readers.stream()
+                            .filter(reader -> reader.getName().equalsIgnoreCase(userName) && reader.getSurname().equalsIgnoreCase(userSurname))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (user == null) {
+                        System.out.println("Kullanıcı bulunamadı.");
+                    } else {
+                        int borrowedCount = user.getBorrowedBooks().size();
+                        System.out.println("Şu anda ödünç aldığınız kitap sayısı: " + borrowedCount);
+                        if (borrowedCount >= 5) {
+                            System.out.println("Kitap limitine ulaştınız! Daha fazla kitap ödünç alamazsınız.");
+                        } else {
+                            System.out.println("Daha fazla kitap ödünç alabilirsiniz. Kalan limit: " + (5 - borrowedCount));
+                        }
+                    }
                     break;
 
-                case 9:
+                case 11:
                     System.out.println("Çıkış yapılıyor...");
                     break;
 
@@ -195,6 +263,24 @@ public class Main {
                     System.out.println("Geçersiz seçim. Tekrar deneyin.");
                     break;
             }
-        } while (choice != 9);
+        } while (choice != 11);
     }
+
+    // Kullanıcı doğrulama (Verify Member) metodu
+    private static Reader verifyMember(Scanner scanner, Set<Reader> readers) {
+        System.out.print("Adınızı girin: ");
+        String name = scanner.nextLine();
+        System.out.print("Soyadınızı girin: ");
+        String surname = scanner.nextLine();
+
+        return readers.stream()
+                .filter(reader -> reader.getName().equalsIgnoreCase(name) && reader.getSurname().equalsIgnoreCase(surname))
+                .findFirst()
+                .orElseGet(() -> {
+                    Reader newReader = new Reader(name, surname);
+                    readers.add(newReader);
+                    System.out.println("Kullanıcı sisteme eklendi: " + name + " " + surname);
+                    return newReader;
+                });
     }
+}

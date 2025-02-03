@@ -4,12 +4,12 @@ import java.util.*;
 
 public class Author extends Person {
 
-    protected final  List<Book> books;
+    private  final  List<Book> books;
 
 
-    public Author(String name,String surname, String id, List<Book> books) {
-        super(name,surname);
-        this.books=new ArrayList<>();
+    public Author(String name, String surname) {
+        super(name, surname);
+        this.books = new ArrayList<>();
     }
 
     public List<Book> getBooks() {
@@ -17,9 +17,14 @@ public class Author extends Person {
     }
 
 
-    public void newBook(Book book){
-        books.add(book);
-        System.out.println(book.getName() + " yazara eklendi: " + getName());
+
+    public void newBook(Book book) {
+        if (!books.contains(book)) {
+            books.add(book);
+            System.out.println(book.getName() + " yazara eklendi: " + getName());
+        } else {
+            System.out.println("Bu kitap zaten mevcut.");
+        }
     }
 
 
