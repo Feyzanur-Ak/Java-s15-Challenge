@@ -1,5 +1,4 @@
 import com.library.Library.*;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -59,7 +58,8 @@ public class Main {
             System.out.println("8. Kullanıcı Ekle (Student/Faculty)");
             System.out.println("9. Kullanıcıları Listele");
             System.out.println("10. Kullanıcı Kitap Limitini Kontrol Et");
-            System.out.println("11. Çıkış");
+            System.out.println("11. Kitap Satın Al");
+            System.out.println("12. Çıkış");
             System.out.print("Seçiminizi yapın: ");
             choice = scanner.nextInt();
             scanner.nextLine(); // Satır sonu karakterini temizle
@@ -111,6 +111,7 @@ public class Main {
                         System.out.println("Geçersiz seçim.");
                     }
                     break;
+
                 case 3:
                     // Kitap güncelle
                     System.out.print("Güncellemek istediğiniz kitabın ID'sini girin: ");
@@ -226,6 +227,7 @@ public class Main {
                         System.out.println("Bu isimde bir kitap bulunamadı.");
                     }
                     break;
+
                 case 8:
                     // Yeni kullanıcı ekleme
                     System.out.println("Kullanıcı türünü seçin: 1. Student, 2. Faculty");
@@ -257,14 +259,6 @@ public class Main {
                         System.out.println("Geçersiz kullanıcı türü.");
                     }
                     break;
-                case 10:
-                    // Kullanıcı kitap limitini kontrol et
-                    Reader readerToCheck = verifyMember(scanner, readers); // Kullanıcı doğrulama (zaten mevcut bir kullanıcı ya da yeni kullanıcı ekleme)
-
-                    System.out.println("Kullanıcı: " + readerToCheck.getName() + " " + readerToCheck.getSurname());
-                    System.out.println("Mevcut ödünç alınan kitap sayısı: " + readerToCheck.getBorrowedBooks().size());
-                    System.out.println("Maksimum kitap limiti: " + readerToCheck.getMaxBookLimit());
-                    break;
 
                 case 9:
                     // Kullanıcıları listele
@@ -274,7 +268,36 @@ public class Main {
                     });
                     break;
 
+                case 10:
+                    // Kullanıcı kitap limitini kontrol et
+                    Reader readerToCheck = verifyMember(scanner, readers); // Kullanıcı doğrulama (zaten mevcut bir kullanıcı ya da yeni kullanıcı ekleme)
+
+                    System.out.println("Kullanıcı: " + readerToCheck.getName() + " " + readerToCheck.getSurname());
+                    System.out.println("Mevcut ödünç alınan kitap sayısı: " + readerToCheck.getBorrowedBooks().size());
+                    System.out.println("Maksimum kitap limiti: " + readerToCheck.getMaxBookLimit());
+                    break;
+
                 case 11:
+                    // Kitap satın alma
+                    Reader purchasingReader = verifyMember(scanner, readers);
+
+                    System.out.print("Satın almak istediğiniz kitabın ID'sini girin: ");
+                    long purchaseBookId = scanner.nextLong();
+                    scanner.nextLine();
+
+                    Book bookToPurchase = books.stream()
+                            .filter(book -> book.getId() == purchaseBookId)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (bookToPurchase != null) {
+                        purchasingReader.purchaseBook(bookToPurchase); // Reader sınıfındaki purchaseBook metodu çağrılıyor
+                    } else {
+                        System.out.println("Bu ID'ye sahip bir kitap bulunamadı.");
+                    }
+                    break;
+
+                case 12:
                     System.out.println("Çıkış yapılıyor...");
                     break;
 
@@ -282,7 +305,7 @@ public class Main {
                     System.out.println("Geçersiz seçim. Tekrar deneyin.");
                     break;
             }
-        } while (choice != 11);
+        } while (choice != 12);
     }
 
     // Kullanıcı doğrulama (Verify Member) metodu

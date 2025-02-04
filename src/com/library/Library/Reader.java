@@ -64,8 +64,8 @@ public class Reader extends Person {
     public void purchaseBook(Book book) {
         Scanner scanner = new Scanner(System.in);
 
-        if (!borrowedBooks.contains(book)) {
-            System.out.println("Kitap kütüphanemizde bulunmamaktadır.");
+        if (!book.getStatus().equalsIgnoreCase("available")) {
+            System.out.println("Bu kitap şu anda satın alınamaz. Mevcut değil ya da başka bir işlemde.");
             return;
         }
 
@@ -75,10 +75,10 @@ public class Reader extends Person {
 
         switch (cevap) {
             case 1:
-                borrowedBooks.remove(book);
-                book.setStatus("purchased");
-                book.setOwner(this);
-                memberRecord.decBookIssued(); // Satın alınan kitap ödünç listesinden çıkarılmalı
+                borrowedBooks.remove(book); // Kitap ödünç alınan kitap listesinden çıkarılıyor
+                book.setStatus("purchased"); // Kitap durumu "purchased" olarak güncelleniyor
+                book.setOwner(this); // Kitabın sahibi olarak kullanıcı atanıyor
+                memberRecord.decBookIssued(); // Kullanıcının ödünç aldığı kitap sayısı azaltılıyor
                 System.out.println("Kitabı başarıyla satın aldınız: " + book.getName());
                 break;
 
@@ -90,8 +90,6 @@ public class Reader extends Person {
                 System.out.println("Geçersiz bir seçim yaptınız. Lütfen tekrar deneyin.");
                 break;
         }
-
-        showBook();
     }
 
     public void showBook() {
