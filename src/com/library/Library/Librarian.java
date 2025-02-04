@@ -1,6 +1,6 @@
-package com.library.Person;
+package com.library.Library;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -74,25 +74,48 @@ public class Librarian extends Person {
 
     // Üye doğrulama
     public boolean verifyMember(Set<Reader> readers, String name, String surname) {
+        // Var olan üyeyi kontrol et
         for (Reader reader : readers) {
             if (reader.getName().equalsIgnoreCase(name) && reader.getSurname().equalsIgnoreCase(surname)) {
                 System.out.println("Üye doğrulandı: " + name + " " + surname);
                 return true;
             }
         }
+
+        // Üye bulunamadı, yeni üye kaydı başlatılıyor
         System.out.println("Üye bulunamadı: " + name + " " + surname);
         System.out.println("Yeni üye kaydı başlatılıyor...");
 
-        // Yeni üye kaydı
+        // Kullanıcıdan dinamik bilgi al
         Scanner scanner = new Scanner(System.in);
+
         System.out.print("Lütfen üyenin yaşını girin: ");
         int age = scanner.nextInt();
         scanner.nextLine(); // Satır sonu karakterini temizle
 
-        Reader newReader = new Reader(name, surname);
-        readers.add(newReader);
-        System.out.println("Yeni üye başarıyla kaydedildi: " + newReader);
+        System.out.print("Lütfen üyenin adresini girin: ");
+        String address = scanner.nextLine();
 
+        System.out.print("Lütfen üyenin telefon numarasını girin: ");
+        String phoneNo = scanner.nextLine();
+
+        // Yeni MemberRecord oluştur
+        MemberRecord memberRecord = new MemberRecord(
+                address,
+                name + " " + surname,
+                5, // Maksimum kitap limiti
+                0, // Henüz ödünç alınan kitap sayısı yok
+                LocalDate.now(), // Üyelik tarihi
+                "Reader", // Üye tipi
+                System.currentTimeMillis(), // Üye ID'si
+                phoneNo
+        );
+
+        // Yeni Reader oluştur
+        Reader newReader = new Reader(name, surname, memberRecord);
+        readers.add(newReader);
+
+        System.out.println("Yeni üye başarıyla kaydedildi: " + newReader.getName() + " " + newReader.getSurname());
         return true;
     }
 

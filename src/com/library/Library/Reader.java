@@ -1,4 +1,4 @@
-package com.library.Person;
+package com.library.Library;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,14 +6,23 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Reader extends Person {
-
+    private MemberRecord memberRecord;
     private final List<Book> borrowedBooks;
     private final int maxBookLimit;
 
-    public Reader(String name, String surname) {
+    public Reader(String name, String surname, MemberRecord memberRecord) {
         super(name, surname);
         this.maxBookLimit = 5;
         this.borrowedBooks = new ArrayList<>();
+        this.memberRecord = memberRecord;
+    }
+
+    public MemberRecord getMemberRecord() {
+        return memberRecord;
+    }
+
+    public void setMemberRecord(MemberRecord memberRecord) {
+        this.memberRecord = memberRecord;
     }
 
     public int getMaxBookLimit() {
@@ -33,6 +42,7 @@ public class Reader extends Person {
             borrowedBooks.add(book);
             book.setStatus("borrowed");
             book.setOwner(this);
+            memberRecord.incBookIssued(); // MemberRecord'daki kitap sayısını artır
             System.out.println(book.getName() + " ödünç alındı.");
             return true;
         }
@@ -44,6 +54,7 @@ public class Reader extends Person {
         if (borrowedBooks.remove(book)) {
             book.setStatus("available");
             book.setOwner(null);
+            memberRecord.decBookIssued(); // MemberRecord'daki kitap sayısını azalt
             System.out.println(book.getName() + " iade edildi.");
         } else {
             System.out.println("Bu kitap sizin tarafınızdan alınmamış.");
@@ -56,29 +67,29 @@ public class Reader extends Person {
         if (!borrowedBooks.contains(book)) {
             System.out.println("Kitap kütüphanemizde bulunmamaktadır.");
             return;
-
         }
 
         System.out.println("Kitabın fiyatı " + book.getPrice() + " TL'dir.");
         System.out.println("Bu kitabı satın almak istiyor musunuz? (Evet için 1, Hayır için 2):");
         int cevap = scanner.nextInt();
 
-            switch (cevap) {
-                case 1:
-                    borrowedBooks.remove(book);
-                    book.setStatus("purchased");
-                    book.setOwner(this);
-                    System.out.println("Kitabı başarıyla satın aldınız: " + book.getName());
-                    break;
+        switch (cevap) {
+            case 1:
+                borrowedBooks.remove(book);
+                book.setStatus("purchased");
+                book.setOwner(this);
+                memberRecord.decBookIssued(); // Satın alınan kitap ödünç listesinden çıkarılmalı
+                System.out.println("Kitabı başarıyla satın aldınız: " + book.getName());
+                break;
 
-                case 2:
-                    System.out.println("Satın alma işlemi iptal edildi.");
-                    break;
+            case 2:
+                System.out.println("Satın alma işlemi iptal edildi.");
+                break;
 
-                default:
-                    System.out.println("Geçersiz bir seçim yaptınız. Lütfen tekrar deneyin.");
-                    break;
-            }
+            default:
+                System.out.println("Geçersiz bir seçim yaptınız. Lütfen tekrar deneyin.");
+                break;
+        }
 
         showBook();
     }

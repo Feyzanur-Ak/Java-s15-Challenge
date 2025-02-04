@@ -1,4 +1,4 @@
-package com.library.Person;
+package com.library.Library;
 
 import java.time.LocalDate;
 
@@ -88,5 +88,46 @@ public class MemberRecord {
         this.phoneNo = phoneNo;
     }
 
+    public String getMember() {
+        return "Üye ID: " + memberId + ", İsim: " + name + ", Tür: " + type + ", Üyelik Tarihi: " + dateOfMembership +
+                ", Adres: " + address + ", Telefon: " + phoneNo + ", Alınan Kitap Sayısı: " + noBooksIssued +
+                ", Maksimum Kitap Limiti: " + maxBookLimit;
+    }
 
+
+    public void incBookIssued() {
+        if (noBooksIssued < maxBookLimit) {
+            noBooksIssued++;
+            System.out.println("Kitap ödünç alma sayısı artırıldı: " + noBooksIssued);
+        } else {
+            System.out.println("Maksimum kitap limiti aşıldı.");
+        }
+    }
+
+    public void decBookIssued() {
+        if (noBooksIssued > 0) {
+            noBooksIssued--;
+            System.out.println("Kitap iade edildi. Ödünç alınan kitap sayısı: " + noBooksIssued);
+        } else {
+            System.out.println("Ödünç alınan kitap yok.");
+        }
+    }
+
+    public void payBill(double amount) {
+        System.out.println("Üye: " + name + " için " + amount + " TL ödeme yapıldı.");
+    }
+
+    @Override
+    public String toString() {
+        return "MemberRecord{" +
+                "memberId=" + memberId +
+                ", type='" + type + '\'' +
+                ", dateOfMembership=" + dateOfMembership +
+                ", noBooksIssued=" + noBooksIssued +
+                ", maxBookLimit=" + maxBookLimit +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phoneNo='" + phoneNo + '\'' +
+                '}';
+    }
 }

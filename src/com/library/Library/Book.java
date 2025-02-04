@@ -1,8 +1,5 @@
-package com.library.Person;
-
+package com.library.Library;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Book {
@@ -124,6 +121,7 @@ public class Book {
         this.owner = newOwner;
         System.out.println("Kitap sahibi değiştirildi: " + (newOwner != null ? newOwner.getName() : "Hiç kimse"));
     }
+
 
     @Override
     public String toString() {
