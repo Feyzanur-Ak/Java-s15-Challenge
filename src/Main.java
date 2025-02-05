@@ -205,29 +205,55 @@ public class Main {
                             .orElse(null);
 
                     if (borrowingBook != null) {
+                        // Kitap ödünç alınıyor
                         borrowingReader.borrowBook(borrowingBook);
+                        borrowingBook.setStatus("borrowed"); // Kitap durumu güncelleniyor
+
+                        // Fatura oluşturuluyor
+                        librarian.createBill(readers, borrowingReader.getName(), borrowingReader.getSurname(), borrowingBook.getPrice());
+
+                        System.out.println(borrowingBook.getName() + " kitabı başarıyla ödünç alındı.");
                     } else {
                         System.out.println("Kitap mevcut değil ya da başka bir kullanıcı tarafından ödünç alınmış.");
                     }
                     break;
 
                 case 7:
-                    // Kitap iade et
-                    System.out.print("İade etmek istediğiniz kitabın adını girin: ");
-                    String bookNameToReturn = scanner.nextLine();
+                    // Kitap iade etme
+                    System.out.print("İade işlemi için üye adını girin: ");
+                    String memberName = scanner.nextLine();
+                    System.out.print("Üye soyadını girin: ");
+                    String memberSurname = scanner.nextLine();
 
-                    Book bookToReturn = library.getBooks().stream()
-                            .filter(book -> book.getName().equalsIgnoreCase(bookNameToReturn))
+// Üye doğrulama
+                    Reader returningReader = readers.stream()
+                            .filter(reader -> reader.getName().equalsIgnoreCase(memberName) && reader.getSurname().equalsIgnoreCase(memberSurname))
                             .findFirst()
                             .orElse(null);
 
-                    if (bookToReturn != null) {
-                        library.take_back_book(bookToReturn);
+                    if (returningReader != null) {
+                        System.out.print("İade etmek istediğiniz kitabın adını girin: ");
+                        String bookNameToReturn = scanner.nextLine();
+
+                        Book bookToReturn = returningReader.getBorrowedBooks().stream()
+                                .filter(book -> book.getName().equalsIgnoreCase(bookNameToReturn))
+                                .findFirst()
+                                .orElse(null);
+
+                        if (bookToReturn != null) {
+                            // Kitap iade ediliyor
+                            returningReader.returnBook(bookToReturn);
+                            bookToReturn.setStatus("available"); // Kitap durumu güncelleniyor
+
+                            // Kullanıcıya ücret iadesi yapılıyor
+                            System.out.println("İade işlemi tamamlandı. " + bookToReturn.getPrice() + " TL kullanıcıya iade edildi.");
+                        } else {
+                            System.out.println("Bu isimde bir kitap, bu kullanıcı tarafından ödünç alınmamış.");
+                        }
                     } else {
-                        System.out.println("Bu isimde bir kitap bulunamadı.");
+                        System.out.println("Üye bulunamadı. Lütfen doğru bilgileri girdiğinizden emin olun.");
                     }
                     break;
-
                 case 8:
                     // Yeni kullanıcı ekleme
                     System.out.println("Kullanıcı türünü seçin: 1. Student, 2. Faculty");
