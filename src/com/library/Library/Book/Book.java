@@ -1,4 +1,6 @@
-package com.library.Library;
+package com.library.Library.Book;
+import com.library.Library.Person.Reader;
+
 import java.time.LocalDate;
 import java.util.Objects;
 

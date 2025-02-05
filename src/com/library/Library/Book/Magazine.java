@@ -1,8 +1,10 @@
-package com.library.Library;
+package com.library.Library.Book;
+
+import com.library.Library.Person.Reader;
 
 import java.time.LocalDate;
 
-public class Magazine extends Book{
+public class Magazine extends Book {
     private String issue;
     private String genre;
 

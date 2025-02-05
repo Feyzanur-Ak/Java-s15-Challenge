@@ -1,5 +1,10 @@
 package com.library.Library;
 
+import com.library.Library.Book.Book;
+import com.library.Library.Member.MemberRecord;
+import com.library.Library.Person.Person;
+import com.library.Library.Person.Reader;
+
 import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.Set;

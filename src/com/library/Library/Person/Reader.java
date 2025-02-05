@@ -1,4 +1,7 @@
-package com.library.Library;
+package com.library.Library.Person;
+
+import com.library.Library.Book.Book;
+import com.library.Library.Member.MemberRecord;
 
 import java.util.ArrayList;
 import java.util.List;

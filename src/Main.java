@@ -1,4 +1,11 @@
 import com.library.Library.*;
+import com.library.Library.Book.Book;
+import com.library.Library.Member.Faculty;
+import com.library.Library.Member.MemberRecord;
+import com.library.Library.Person.Author;
+import com.library.Library.Person.Reader;
+import com.library.Library.Member.Student;
+
 import java.time.LocalDate;
 import java.util.*;
 
@@ -94,7 +101,7 @@ public class Main {
                         scanner.nextLine();
                         books.stream()
                                 .filter(book -> book.getId() == id)
-                                .forEach(System.out::println);
+                                .forEach(System.out::println); // metot referans
                     } else if (searchType == 2) {
                         System.out.print("Kitap Adı: ");
                         String searchName = scanner.nextLine();
@@ -118,7 +125,7 @@ public class Main {
                     long updateBookId = scanner.nextLong();
                     scanner.nextLine(); // Satır sonu karakterini temizle
 
-                    Book bookToUpdate = books.stream()
+                    Book bookToUpdate = books.stream() // burada stream kullanarak
                             .filter(book -> book.getId() == updateBookId)
                             .findFirst()
                             .orElse(null);

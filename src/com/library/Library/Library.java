@@ -1,4 +1,7 @@
 package com.library.Library;
+import com.library.Library.Book.Book;
+import com.library.Library.Person.Reader;
+
 import java.util.Set;
 
 public class Library

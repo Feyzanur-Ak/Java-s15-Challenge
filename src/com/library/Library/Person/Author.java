@@ -1,4 +1,6 @@
-package com.library.Library;
+package com.library.Library.Person;
+
+import com.library.Library.Book.Book;
 
 import java.util.*;
 

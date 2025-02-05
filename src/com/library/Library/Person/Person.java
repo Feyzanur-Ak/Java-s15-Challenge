@@ -1,4 +1,4 @@
-package com.library.Library;
+package com.library.Library.Person;
 
 public abstract class Person {
 
