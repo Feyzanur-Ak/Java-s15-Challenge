@@ -3,6 +3,7 @@ import com.library.Library.Book.Book;
 import com.library.Library.Member.Faculty;
 import com.library.Library.Member.MemberRecord;
 import com.library.Library.Person.Author;
+import com.library.Library.Person.Librarian;
 import com.library.Library.Person.Reader;
 import com.library.Library.Member.Student;
 
